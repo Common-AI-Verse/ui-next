@@ -1,0 +1,26 @@
+/* For Light */
+@font-face {
+    font-family: 'IBM Plex Mono';
+    src: url('/fonts/Light.ttf');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* For Regular */
+@font-face {
+    font-family: 'IBM Plex Mono';
+    src: url('/fonts/Regular.ttf');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* For Semibold */
+@font-face {
+    font-family: 'IBM Plex Mono';
+    src: url('/fonts/SemiBold.ttf');
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+}
