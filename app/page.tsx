@@ -4,43 +4,156 @@ import Image from 'next/image'
 import { useState, useEffect } from 'react';
 import { IoTriangle } from 'react-icons/io5';
 import UnityLoader from '../components/UnityLoader';
+import { useQRCode } from 'next-qrcode'
+import { createClient } from '@supabase/supabase-js'
 
-export default function Home() {
+import EmotionsData from '../types/EmotionsData';
+import HumanData from '../types/HumanData';
 
-    const [interactionsRecorded, setinteractionsRecorded] = useState(0);
-    const [roomOcupied, setroomOcupied] = useState("FREE");
-    const [dataStatus, setdataStatus] = useState("displaying");
-    const [emotionsData, setemotionsData] = useState({
-        "happiness": 0.0,
-        "anger": 0.0,
-        "sadness": 0.0,
-        "relaxation": 0.0
-    });
-    const [humanData, sethumanData] = useState([
+interface NewRecordType {
+    actual_state: string;  // Adjust the type if actual_state is not a string
+    // ... other properties
+  }
+
+
+
+const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
+
+const Home : React.FC = () => {
+
+
+
+    const [interactionsRecorded, setinteractionsRecorded] = useState<number>(0);
+
+    const [roomOcupied, setroomOcupied] = useState<boolean>(false);
+
+    const [emotionsData, setemotionsData] = useState<EmotionsData[]>([
         {
-            "movementQuantity": 0.0,
-            "speed": 0.0,
-            "motionRange": 0.0,
-            "proximity": 0.0
+        "happiness": 1.4,
+        "anger": 6.8,
+        "sadness": 4.3,
+        "relaxation": 2.8
         },
         {
-            "movementQuantity": 0.0,
-            "speed": 0.0,
-            "motionRange": 0.0,
-            "proximity": 0.0
+            "happiness": 3.8,
+            "anger": 4.2,
+            "sadness": 2.2,
+            "relaxation": 5.1
         },
         {
-            "movementQuantity": 0.0,
-            "speed": 0.0,
-            "motionRange": 0.0,
-            "proximity": 0.0
+            "happiness": 19.2,
+            "anger": 1.1,
+            "sadness": 4.4,
+            "relaxation": 2.9
+        }
+        ]
+        );
+
+
+    const [humanData, sethumanData] = useState<HumanData[]>([
+        {
+            "movementQuantity": 2.3,
+            "speed": 4.1,
+            "motionRange": 2.2,
+            "proximity": 5.9
         },
-        
-        
+        {
+            "movementQuantity": 8.1,
+            "speed": 2.3,
+            "motionRange": 7.8,
+            "proximity": 6.3
+        },
+        {
+            "movementQuantity": 5.3,
+            "speed": 8.4,
+            "motionRange": 5.7,
+            "proximity": 9.1
+        }        
      ]
     );
 
-  return (
+    const [objectGenerator, setobjectGenerator] = useState<string>("1536716117162210270113237713327615153061660714276153671611716221027011323771332761515306166071427615");
+
+    const [qrUrl, setqrUrl] = useState<string>("");
+
+    const [lang, setLang] = useState<string>("es");
+
+    const { SVG } = useQRCode();
+
+    const emotionsParam:string = encodeURIComponent(JSON.stringify(emotionsData));
+    const humanParam:string = encodeURIComponent(JSON.stringify(humanData));
+
+    useEffect(() => {
+
+        const newUrl:string = `${window.location.pathname}?emotionsData=${emotionsParam}&humanData=${humanParam}&objGen=${objectGenerator}`;
+
+        setqrUrl(`https://ui-api-next.vercel.app/mobileview?emotionsData=${emotionsParam}&humanData=${humanParam}&objGen=${objectGenerator}`)
+
+        window.history.replaceState({}, '', newUrl);
+
+        console.log("Url: ", newUrl);
+
+    }, [emotionsParam, humanParam, objectGenerator]);
+
+      
+    useEffect(() => {
+        const languages = ['es', 'en', 'cat'];  // array of languages
+        let currentLangIndex = 0;  // starting with Spanish
+    
+        const intervalId = setInterval(() => {
+          currentLangIndex = (currentLangIndex + 1) % languages.length;  // cycle through languages
+          setLang(languages[currentLangIndex]);
+        }, 12000);  // change language every 5 seconds
+    
+        return () => clearInterval(intervalId);  // cleanup interval on component unmount
+      }, []);  
+
+
+
+
+useEffect(() => {
+
+    
+    const changes = supabase
+    .channel('table-db-changes')
+    .on(
+      'postgres_changes',
+      {
+        event: '*',
+        schema: 'public',
+        table: 'room_state_dev',
+      },
+      (payload) => {
+        const { new: newRecord } = payload;
+
+        console.log('New Record:', newRecord);
+
+        const { actual_state } = newRecord as NewRecordType; 
+        
+        if(actual_state === "InitialState"){
+
+            setroomOcupied(true);
+            
+        } else if(actual_state === "FinalState"){
+
+            window.location.reload()
+        } else {
+
+            setroomOcupied(false);
+        }
+
+      } 
+    )
+    .subscribe()
+
+}, []);
+    
+    //console.log("Url: ", url);
+
+
+    return (
     <div className="h-screen w-full p-4">
         <div className="h-full border-2 border-graphics-red p-3">
             <div className="h-full border-2 border-graphics-green p-3">
@@ -58,94 +171,169 @@ export default function Home() {
                             alt="Common AI Verse Logo"
                             width={781}
                             height={68}
-                            className="w-9/12 pt-2"
+                            className="w-8/12 pt-8"
                             />
-                            <div className="w-full text-right">
-                                <p className="font-light text-lg l-auto">Duration: 5 min</p>
-                                <p className="font-light text-lg uppercase">Interacciones recorded: { interactionsRecorded }</p>
+                            <div className="w-full text-right pt-8">
+                                <p className="font-light text-lg">Number of interactions: { interactionsRecorded }</p>
                             </div>
-                            <div className="text-2xl uppercase mt-auto mb-3 font-light"><p>AI STATUS: LEARNING</p></div>
-                            <div className="text-2xl uppercase mt-auto mb-3 text-right"><p className="">ROOM status: { roomOcupied }</p></div>
+                            <div className="text-xl uppercase mt-auto mb-3 text-graphics-green"><p className="">ROOM status: { `${ roomOcupied ? "OCCUPIED" : "FREE" }` }</p></div>
                         </div>
 
                         {/* Second text block */}
 
-                        <div className="flex flex-col w-full pt-6 px-4 border-white border-b-[3px] pb-11">
 
-                        <p className="font-plex font-semibold text-2xl uppercase">UNDERSTANDING THE COMMON-AI-VERSE</p>
+                        <div className="flex flex-col w-full pt-6 border-white border-b-[3px] pb-11">
 
-                        <p className="font-plex font-extralight text-[21px] pt-4">COMMON-AI-VERSE es una interfaz inversiva que comunica los estados
-                        anímicos de dos grandes cuerpos sociales: La inteligencia artificial y la especie humana.
-                        <br />
-                        La instalación propone una relación basada en la inteligencia colectiva
-                        que es retada para entrar en empatía con una inteligencia artificial.
-                        </p>
+                        <p className="font-plex font-regular text-2xl">Experience duration: 5 min</p>
 
-                        <p className="font-plex font-semibold text-2xl uppercase pt-6">INSTRUCCIONES</p>
-                        <ul className="flex flex-col  gap-4 text-[21px] font-extralight pt-4">
+                        <h1 className="text-5xl uppercase text-accents-green font-bold pt-5 pb-8">STATE: { roomOcupied ? "COLLECTING DATA" : "WAITING FOR HUMANS"}</h1>
+
+
+                        { lang === "es" && (       
+                        <div className="border-white border-l-2 -ml-2 pl-4 mb-8">
+                        <p className="font-plex font-semibold text-2xl uppercase">INSTRUCCIONES</p>
+                        <ul className="flex flex-col  gap-11 text-2xl font-extralight pt-10">
                             <li>
-                                <p className="">1° Participa con al menos un acompañante. Máximo de 3 personas</p>
+                                <p className="">Participa con al menos un acompañante</p>
                             </li>
                             <li>
-                                <p className="">2° Reacciona a los estados anímicos de la IA</p>
+                                <p className="">Entrad en la cápsula interactiva</p>
                             </li>
                             <li>
-                                <p className="">3° Enseña a la IA a sentir en grupo</p>
+                                <p className="">Seguid las instrucciones de la IA</p>
                             </li>
                             <li>
-                                <p className="">4° Vuelve a estar monitor para ver el resultado</p>
+                                <p className="">Cooperad con vuestros movimientos para interactuar con la IA</p>
+                            </li>
+                            <li>
+                                <p className="">Volved aquí para descargar vuestra entidad digital</p>
                             </li>
 
                         </ul>
+                        </div>
+                        )
+                        }
+
+                        { lang === "en" && (
+                        <div className="border-white border-l-2 -ml-2 pl-4 mb-8">
+                        <p className="font-plex font-semibold text-2xl uppercase">INSTRUCTIONS</p>
+                        <ul className="flex flex-col  gap-11 text-2xl font-extralight pt-10">
+                            <li>
+                                <p className="">Participate with at least one companion</p>
+                            </li>
+                            <li>
+                                <p className="">Enter the interactive capsule</p>
+                            </li>
+                            <li>
+                                <p className="">Follow the instructions of the AI</p>
+                            </li>
+                            <li>
+                                <p className="">Cooperate with your movements to interact with the AI</p>
+                            </li>
+                            <li>
+                                <p className="">Return here to download your digital entity</p>
+                            </li>
+
+                        </ul>
+                        </div>
+                        )
+                        
+                        }
+
+                        { lang === "cat" && (
+                        <div className="border-white border-l-2 -ml-2 pl-4 mb-8">
+                        <p className="font-plex font-semibold text-2xl uppercase">INSTRUCCIONS</p>
+                        <ul className="flex flex-col  gap-11 text-2xl font-extralight pt-10">
+                            <li>
+                                <p className="">Participa amb almenys un acompanyant</p>
+                            </li>
+                            <li>
+                                <p className="">Entreu a la càpsula interactiva</p>
+                            </li>
+                            <li>
+                                <p className="">Seguiu les instruccions de la IA</p>
+                            </li>
+                            <li>
+                                <p className="">Coopereu amb els vostres moviments per interactuar amb la IA</p>
+                            </li>
+                            <li>
+                                <p className="">Torneu aquí per descarregar la vostra entitat digital</p>
+                            </li>
+
+                        </ul>
+                        </div> 
+                        )
+                        
+                        }
                         
                         </div>
 
-                        {/* Data display */}
 
-                        {   
-
-                        dataStatus == "displaying" &&
-
-                        (
-                            <div className="flex flex-row w-full gap-14">
-
-                                <div className="flex flex-col h-auto pt-10 w-1/4">
-
-                                {/* Emotions data display */}
-
-                                <ul className="flex flex-col w-full pl-5 gap-4 pb-14">
-
-                                    <li className="flex flex-row w-full gap-3">
-                                        <IoTriangle className="text-4xl"/>
-                                        <p className="font-semibold text-xl my-auto">Happy: { `${emotionsData.happiness}`}</p>
-                                    </li>
-
-                                    <li className="flex flex-row w-full gap-3">
-                                        <IoTriangle className="text-4xl"/>
-                                        <p className="font-semibold text-xl my-auto">Angry: { `${emotionsData.anger }`}</p>
-                                    </li>
-
-                                    <li className="flex flex-row w-full gap-3">
-                                        <IoTriangle className="text-4xl"/>
-                                        <p className="font-semibold text-xl my-auto">Sad: { `${emotionsData.sadness }`}</p>
-                                    </li>
-
-                                    <li className="flex flex-row w-full gap-3">
-                                        <IoTriangle className="text-4xl"/>
-                                        <p className="font-semibold text-xl my-auto">Relax: { `${emotionsData.relaxation }`}</p>
-                                    </li>
-                                </ul>
+                        
+                            <div className="flex flex-col w-full">
 
 
-                                <span className="pl-3">
+                                {/* Data display */}
+
+                                <div className="flex flex-row w-full h-auto pt-11">
+
+                                                                        
+                                    <div id="qrCode" className="w-3/12 h-[220px] text-black text-center text-3xl">
+                                         {qrUrl && qrUrl.length > 0 ? (
+                                            <SVG
+                                              text={qrUrl}
+                                              options={{
+                                                margin: 1,
+                                                width: 220,
+                                                color: {
+                                                  light: '#FFFFFFFF',
+                                                },
+                                              }}
+                                            />
+                                         ) : (
+                                           <p>Loading...</p>  // or render nothing or some loading indicator
+                                         )}
+                                    </div>
+
+                                    <div className="border-r-2 border-white my-auto h-20 w-7/12">
+                                    <p className="w-full font-bold text-5xl pt-3 text-center">LAST SESSION DATA</p>
+                                    </div>
+                                    <div className="flex flex-col w-2/12 my-auto text-xl font-semibold pl-4">
+                                        <p>13:22:34</p>
+                                        <p>18/10/2023</p>
+
+                                    </div>
+                                
+                                </div>
+
+                                {/* Unity background */}
+                                <div className="relative flex-grow flex w-full h-full ">
+     
+                                <div className="flex flex-col h-[780px] w-full absolute z-[-1] ">
+ 
+                                <UnityLoader />
+ 
+                                 <div id="unityPlayer" className="h-[780px] mx-auto text-black text-center text-3xl fade-out-edges">
+                                     <canvas id="unity-canvas" className="w-full h-full rounded"></canvas>
+                                 </div>
+ 
+                                 </div>
+                                </div>
+ 
+
+
+                                <div className="grid grid-cols-2 grid-rows-2 h-auto pt-28 w-full">
                                 
                                 {/* Human 01 resume */}
+
+                                <div className="w-1/2">
 
                                 <div className="flex align-center justify-center w-full bg-accents-red h-11 border-gray-400 border-2">
                                     <p className="font-light text-xl my-auto text-gray-200">Human 01 Resume</p>
                                 </div>
+                                
 
-                                <ul className="flex flex-col w-full font-extralight pt-5 text-base">
+                                <ul className="flex flex-col w-full font-extralight pt-5 text-base gap-2">
                                     <li>
                                     <p>
                                     Movement Quantity<br/>
@@ -176,13 +364,48 @@ export default function Home() {
 
                                 </ul>
 
+                                </div>
+
+                                {/* Emotions data display */}
+
+                                <ul className="flex flex-col w-full pt-12 gap-7 pr-4">
+
+                                    <li className="flex flex-row-reverse w-full gap-8">
+                                        <IoTriangle className="text-2xl"/>
+                                        <p className="font-semibold text-xl my-auto">Happy: { `${emotionsData[0].happiness}`}</p>
+                                        
+                                    </li>
+
+                                    <li className="flex flex-row-reverse w-full gap-8">
+                                    <IoTriangle className="text-2xl"/>
+                                        <p className="font-semibold text-xl my-auto">Angry: { `${emotionsData[0].anger }`}</p>
+                                        
+                                    </li>
+
+                                    <li className="flex flex-row-reverse w-full gap-8">
+                                    <IoTriangle className="text-2xl"/>
+                                        <p className="font-semibold text-xl my-auto">Sad: { `${emotionsData[0].sadness }`}</p>
+                                        
+                                    </li>
+
+                                    <li className="flex flex-row-reverse w-full gap-8">
+                                        <IoTriangle className="text-2xl"/>
+                                        <p className="font-semibold text-xl my-auto">Relax: { `${emotionsData[0].relaxation }`}</p>
+                                        
+                                    </li>
+                                </ul>
+
+
+
                                 {/* Human 02 resume */}
 
-                                <div className="flex align-center justify-center w-full bg-accents-green h-11 border-gray-400 border-2 mt-8">
+                                <div className="w-1/2">
+
+                                <div className="flex align-center justify-center w-full bg-accents-green h-11 border-gray-400 border-2 mt-6">
                                     <p className="font-regular text-xl my-auto text-black">Human 02 Resume</p>
                                 </div>
 
-                                <ul className="flex flex-col  w-full font-extralight pt-5 text-base">
+                                <ul className="flex flex-col  w-full font-extralight pt-5 text-base gap-2">
                                     <li>
                                     <p>
                                     Movement Quantity<br/>
@@ -213,13 +436,17 @@ export default function Home() {
 
                                 </ul>
 
-                                {/* Human 03 resume */}
+                                </div>
 
-                                <div className="flex align-center justify-center w-full bg-accents-blue h-11 border-gray-400 border-2 mt-8">
+                                {/* Human 03 resume */}
+                                
+                                <div className="w-1/2 ml-auto">
+
+                                <div className="flex align-center justify-center w-full bg-accents-blue h-11 border-gray-400 border-2 mt-6">
                                     <p className="font-regular text-xl my-auto text-gray-200">Human 03 Resume</p>
                                 </div>
 
-                                <ul className="flex flex-col  w-full font-extralight pt-5 text-base">
+                                <ul className="flex flex-col  w-full font-extralight pt-5 text-base gap-2 text-right">
                                     <li>
                                     <p>
                                     Movement Quantity<br/>
@@ -250,171 +477,15 @@ export default function Home() {
 
                                 </ul>
 
-                                </span>
+                                </div>
 
                                 </div>
 
-                                <div className="flex flex-col h-full pt-10 w-3/4 gap-12">
-                                    <p className="w-full font-light text-center text-xl text-gray-200">Descarga el resultado y contacta con tu grupo</p>
-
-                                    <div id="qrCode" className="w-[310px] h-[310px] bg-white mx-auto text-black text-center text-3xl">
-                                        <p className="pt-36">QR CODE</p>
-                                        </div>
-
-                                    <UnityLoader />
-
-                                    <div id="unityPlayer" className="w-[640px] h-[640px] mx-auto text-black text-center text-3xl">
-                                      <canvas id="unity-canvas" className="w-full h-full"></canvas>
-                                    </div>
-
-                                </div>
 
                             </div>
 
 
-                        )
-
-
-                        }
-
-
                     </div>
-
-{/*         <div className="flex flex-col w-full border-l-2 border-white">
-
-                <div className="w-full h-full p-8">
-
-                    <div className="flex flex-row w-full">
-                        <h1 className="text-lg">CURRENT INTERACTION RESULTS</h1>
-                        <div className="flex flex-col ml-auto uppercase">
-                            <p className="">TIME: 16:43:00</p>
-                            <p className="">DATE: 23/10/23</p>
-                        </div>
-                    </div>
-
-                    <div className="flex flex-row h-full w-full gap-24">
-
-                        <ul className="flex flex-col w-7/12 gap-3">
-
-                            <li className="flex flex-col gap-3">
-                                <p>Participation level</p>
-                                <div className="border-2 border-white w-full h-4">
-                                <div className="bg-white w-[40%] h-3"></div>
-                                </div>
-                            </li>
-
-                            <li className="flex flex-col gap-3">
-                                <p>Connection frequency</p>
-                                <div className="border-2 border-white w-full h-4">
-                                <div className="bg-white w-[57%] h-3"></div>
-                                </div>
-                            </li>
-
-                            <li className="flex flex-col gap-3">
-                                <p>Empathy level</p>
-                                <div className="border-2 border-white w-full h-4">
-                                <div className="bg-white w-[5%] h-3"></div>
-                                </div>
-                            </li>
-
-                            <li className="flex flex-col gap-3">
-                                <p>Empathy level</p>
-                                <div className="border-2 border-white w-full h-4">
-                                <div className="bg-white w-[18%] h-3"></div>
-                                </div>
-                            </li>
-
-                            <li className="flex flex-col gap-3">
-                                <p>Empathy level</p>
-                                <div className="border-2 border-white w-full h-4">
-                                <div className="bg-white w-[29%] h-3"></div>
-                                </div>
-                            </li>
-
-                        </ul>
-                        
-                        <div className="flex flex-col pl-auto pt-12 gap-3">
-                        <p className="text-center font-bold text-xl">SCAN ME TO GET THE RESULTS</p>    
-                        <div id="QRCode" className="w-[300px] h-[300px] bg-white "></div>
-                        </div>
-                    </div>
-                    
-
-                </div>
-
-                <div className="w-full h-full border-t-2 border-white p-8">
-
-                <div className="flex flex-row w-full">
-                        <h1 className="text-lg">LAST INTERACTION</h1>
-                        <div className="flex flex-col ml-auto uppercase">
-                            <p className="">TIME: 16:43:00</p>
-                            <p className="">DATE: 23/10/23</p>
-                        </div>
-                    </div>
-
-                        <div className="flex flex-row h-full w-full gap-24">
-
-                        <ul className="flex flex-col w-7/12 gap-3">
-
-                            <li className="flex flex-col gap-3">
-                                <p>Participation level</p>
-                                <div className="border-2 border-white w-full h-4">
-                                <div className="bg-white w-[50%] h-3">                                 
-                                </div>
-
-                                </div>
-                            </li>
-
-                            <li className="flex flex-col gap-3">
-                                <p>Connection frequency</p>
-                                <div className="border-2 border-white w-full h-4">
-                                <div className="bg-white w-[75%] h-3"></div>
-                                </div>
-                            </li>
-
-                            <li className="flex flex-col gap-3">
-                                <p>Empathy level</p>
-                                <div className="border-2 border-white w-full h-4">
-                                <div className="bg-white w-[25%] h-3"></div>
-                                </div>
-                            </li>
-
-                            <li className="flex flex-col gap-3">
-                                <p>Empathy level</p>
-                                <div className="border-2 border-white w-full h-4">
-                                <div className="bg-white w-[95%] h-3"></div>
-                                </div>
-                            </li>
-
-                            <li className="flex flex-col gap-3">
-                                <p>Empathy level</p>
-                                <div className="border-2 border-white w-full h-4">
-                                <div className="bg-white w-[20%] h-3"></div>
-                                </div>
-                            </li>
-
-                        </ul>
-                        
-                        <div className="flex flex-col pl-auto pt-12 gap-3">
-                        <p className="text-center font-bold text-normal uppercase">Colective intelligence results</p>    
-                        <svg className="w-full h-[300px]" xmlns="http://www.w3.org/2000/svg">
-
-
-                            <polygon points="10,290 60,290 35,245" fill="white"/>
-                        
-                            <polygon points="290,10 270,60 230,80 250,30 290,10" fill="white"/>
-
-                            <polygon points="260,255 290,215 230,215 260,255" fill="white"/>
-                        
-                            <polygon points="35,258 260,23 260,238" fill="none" stroke="white" stroke-width="2"/>
-                        </svg>
-
-                        </div>
-                    </div>
-
-                </div>
-
-        </div> */}
 
                 </div>
             </div>
@@ -424,3 +495,6 @@ export default function Home() {
 
         )
 }
+
+
+export default Home;

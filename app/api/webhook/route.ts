@@ -21,6 +21,8 @@ export async function GET(req: Request) {
 
   //console.log('Supabase Response:', sessionsStory);
 
+  
+
   try {
     
     //const result = await sessionsStory.select('*').order('id', { ascending: true });
@@ -40,13 +42,36 @@ export async function GET(req: Request) {
 
 
 export async function POST(req: Request) {
-    
 
+  const roomState = createServerRouteClient(cookies).from('room_state_dev');
+
+  const { new_state } =  await req.json();
+    
   try {
-    
-    console.log("Common-AI-VERSE: API POST OK")
 
-    return NextResponse.json({ "Common-AI-Verse": 'API POST OK' });
+    console.log("new state: ", new_state)
+
+
+    const { error } = await roomState
+      .update({ actual_state: new_state })
+      .eq('state', 'state');
+
+    if (error) {
+
+      console.error(error);
+      return NextResponse.json({'API Error' :'An error occurred'}, { status: 500 });
+
+    } else {
+
+      return NextResponse.json({'State updated': `New State ${new_state}`}, { status: 200 });
+
+/*       console.log("Common-AI-VERSE: API POST OK")
+
+      return NextResponse.json({ "Common-AI-Verse": 'API POST OK' }); */
+    }
+
+    
+
 
   } catch (error) {
 
