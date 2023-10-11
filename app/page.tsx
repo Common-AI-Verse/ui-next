@@ -29,27 +29,12 @@ const Home : React.FC = () => {
 
     const [roomOcupied, setroomOcupied] = useState<boolean>(false);
 
-    const [emotionsData, setemotionsData] = useState<EmotionsData[]>([
-        {
+    const [emotionsData, setemotionsData] = useState<EmotionsData>({
         "happiness": 1.4,
         "anger": 6.8,
         "sadness": 4.3,
         "relaxation": 2.8
-        },
-        {
-            "happiness": 3.8,
-            "anger": 4.2,
-            "sadness": 2.2,
-            "relaxation": 5.1
-        },
-        {
-            "happiness": 19.2,
-            "anger": 1.1,
-            "sadness": 4.4,
-            "relaxation": 2.9
-        }
-        ]
-        );
+        });
 
 
     const [humanData, sethumanData] = useState<HumanData[]>([
@@ -95,7 +80,9 @@ const Home : React.FC = () => {
 
         console.log("Url: ", newUrl);
 
-    }, [emotionsParam, humanParam, objectGenerator]);
+        console.log("Mobile Url: ", qrUrl);
+
+    }, [emotionsParam, humanParam, objectGenerator, qrUrl]);
 
       
     useEffect(() => {
@@ -372,25 +359,25 @@ useEffect(() => {
 
                                     <li className="flex flex-row-reverse w-full gap-8">
                                         <IoTriangle className="text-2xl"/>
-                                        <p className="font-semibold text-xl my-auto">Happy: { `${emotionsData[0].happiness}`}</p>
+                                        <p className="font-semibold text-xl my-auto">Happy: { `${emotionsData.happiness}`}</p>
                                         
                                     </li>
 
                                     <li className="flex flex-row-reverse w-full gap-8">
                                     <IoTriangle className="text-2xl"/>
-                                        <p className="font-semibold text-xl my-auto">Angry: { `${emotionsData[0].anger }`}</p>
+                                        <p className="font-semibold text-xl my-auto">Angry: { `${emotionsData.anger }`}</p>
                                         
                                     </li>
 
                                     <li className="flex flex-row-reverse w-full gap-8">
                                     <IoTriangle className="text-2xl"/>
-                                        <p className="font-semibold text-xl my-auto">Sad: { `${emotionsData[0].sadness }`}</p>
+                                        <p className="font-semibold text-xl my-auto">Sad: { `${emotionsData.sadness }`}</p>
                                         
                                     </li>
 
                                     <li className="flex flex-row-reverse w-full gap-8">
                                         <IoTriangle className="text-2xl"/>
-                                        <p className="font-semibold text-xl my-auto">Relax: { `${emotionsData[0].relaxation }`}</p>
+                                        <p className="font-semibold text-xl my-auto">Relax: { `${emotionsData.relaxation }`}</p>
                                         
                                     </li>
                                 </ul>
