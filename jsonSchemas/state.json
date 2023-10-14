@@ -1,0 +1,15 @@
+
+[
+{
+    "new_state": "WaitingPeople",
+    "info": "Espera a que entre la gente"
+},
+{
+    "new_state": "InitialState",
+    "info": "Una vez la gente esta en posición sale instrucciones por la pantalla"
+},
+{
+    "new_state": "FinalState",
+    "info": "Final de la session, aqui enviamos el POST de la sesión y la info para generar el objecto 3D"
+}
+]

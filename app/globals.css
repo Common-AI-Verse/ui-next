@@ -1,0 +1,73 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* For ExtraLight */
+@font-face {
+  font-family: 'IBMPlex';
+  src: url('./fonts/ExtraLight.ttf');
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* For Light */
+@font-face {
+  font-family: 'IBMPlex';
+  src: url('./fonts/Light.ttf');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* For Regular */
+@font-face {
+  font-family: 'IBMPlex';
+  src: url('./fonts/Regular.ttf');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* For Semibold */
+@font-face {
+  font-family: 'IBMPlex';
+  src: url('./fonts/SemiBold.ttf');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
+body {
+  color: white;
+  background: black;
+}
+
+.fade-out-edges {
+  position: relative;
+}
+
+.fade-out-edges::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: radial-gradient(circle at center, transparent, black 90%);
+  pointer-events: none;
+}

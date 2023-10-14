@@ -1,0 +1,715 @@
+{
+    "training": {
+      "Angry": [
+        {
+          "people": [
+            {
+              "valid": true,
+              "movement_quantity": 0.39404986045808155,
+              "speed": 0.47173819102918046,
+              "motion_range": 0.4063529163558881,
+              "proximity": 1
+            },
+            {
+              "valid": true,
+              "movement_quantity": 0.39404986045808155,
+              "speed": 0.47173819102918046,
+              "motion_range": 0.4063529163558881,
+              "proximity": 1
+            },
+            {
+              "valid": false,
+              "movement_quantity": 0.39404986045808155,
+              "speed": 0.47173819102918046,
+              "motion_range": 0.4063529163558881,
+              "proximity": 1
+            }
+          ]
+        },
+        {
+          "people": [
+            {
+              "valid": true,
+              "movement_quantity": 1,
+              "speed": 1,
+              "motion_range": 0.3475763379844116,
+              "proximity": 1
+            },
+            {
+              "valid": true,
+              "movement_quantity": 0.39404986045808155,
+              "speed": 0.47173819102918046,
+              "motion_range": 0.4063529163558881,
+              "proximity": 1
+            }
+          ]
+        },
+        {
+          "people": [
+            {
+              "valid": true,
+              "movement_quantity": 0.8726914337241819,
+              "speed": 0.9184364398153821,
+              "motion_range": 0.3700637319237134,
+              "proximity": 1
+            },
+            {
+              "valid": true,
+              "movement_quantity": 0.39404986045808155,
+              "speed": 0.47173819102918046,
+              "motion_range": 0.4063529163558881,
+              "proximity": 1
+            },
+            {
+              "valid": true,
+              "movement_quantity": 0.39404986045808155,
+              "speed": 0.47173819102918046,
+              "motion_range": 0.4063529163558881,
+              "proximity": 1
+            }
+          ]
+        }
+      ],
+      "Happy": [
+        {
+          "people": [
+            {
+              "valid": true,
+              "movement_quantity": 0.7797633787433297,
+              "speed": 0.860255204703446,
+              "motion_range": 0.49260972855338603,
+              "proximity": 1
+            },
+            {
+              "valid": true,
+              "movement_quantity": 0.39404986045808155,
+              "speed": 0.47173819102918046,
+              "motion_range": 0.4063529163558881,
+              "proximity": 1
+            },
+            {
+              "valid": true,
+              "movement_quantity": 0.39404986045808155,
+              "speed": 0.47173819102918046,
+              "motion_range": 0.4063529163558881,
+              "proximity": 1
+            }
+          ]
+        },
+        {
+          "people": [
+            {
+              "valid": true,
+              "movement_quantity": 0.23096905848829688,
+              "speed": 0.3496951524112623,
+              "motion_range": 0.06595278541780752,
+              "proximity": 1
+            },
+            {
+              "valid": true,
+              "movement_quantity": 0.39404986045808155,
+              "speed": 0.47173819102918046,
+              "motion_range": 0.4063529163558881,
+              "proximity": 1
+            },
+            {
+              "valid": true,
+              "movement_quantity": 0.39404986045808155,
+              "speed": 0.47173819102918046,
+              "motion_range": 0.4063529163558881,
+              "proximity": 1
+            }
+          ]
+        },
+        {
+          "people": []
+        }
+      ],
+      "Sad": [
+        {
+          "people": [
+            {
+              "valid": true,
+              "movement_quantity": 0.7077310356991395,
+              "speed": 0.7507417429532411,
+              "motion_range": 0.7369276373222892,
+              "proximity": 1
+            },
+            {
+              "valid": true,
+              "movement_quantity": 0.39404986045808155,
+              "speed": 0.47173819102918046,
+              "motion_range": 0.4063529163558881,
+              "proximity": 1
+            },
+            {
+              "valid": true,
+              "movement_quantity": 0.39404986045808155,
+              "speed": 0.47173819102918046,
+              "motion_range": 0.4063529163558881,
+              "proximity": 1
+            }
+          ]
+        },
+        {
+          "people": [
+            {
+              "valid": true,
+              "movement_quantity": 0.5615545309748124,
+              "speed": 0.5981103866814268,
+              "motion_range": 0.9075021385407332,
+              "proximity": 1
+            },
+            {
+              "valid": true,
+              "movement_quantity": 0.39404986045808155,
+              "speed": 0.47173819102918046,
+              "motion_range": 0.4063529163558881,
+              "proximity": 1
+            },
+            {
+              "valid": true,
+              "movement_quantity": 0.39404986045808155,
+              "speed": 0.47173819102918046,
+              "motion_range": 0.4063529163558881,
+              "proximity": 1
+            }
+          ]
+        },
+        {
+          "people": [
+            {
+              "valid": true,
+              "movement_quantity": 0.3111251073762995,
+              "speed": 0.3156236532223324,
+              "motion_range": 0.16517900072903827,
+              "proximity": 1
+            },
+            {
+              "valid": true,
+              "movement_quantity": 0.39404986045808155,
+              "speed": 0.47173819102918046,
+              "motion_range": 0.4063529163558881,
+              "proximity": 1
+            },
+            {
+              "valid": true,
+              "movement_quantity": 0.39404986045808155,
+              "speed": 0.47173819102918046,
+              "motion_range": 0.4063529163558881,
+              "proximity": 1
+            }
+          ]
+        }
+      ],
+      "Relax": [
+        {
+          "people": [
+            {
+              "valid": true,
+              "movement_quantity": 0.3411481022233271,
+              "speed": 0.3324131863045702,
+              "motion_range": 0.9974480670982353,
+              "proximity": 1
+            },
+            {
+              "valid": true,
+              "movement_quantity": 0.39404986045808155,
+              "speed": 0.47173819102918046,
+              "motion_range": 0.4063529163558881,
+              "proximity": 1
+            },
+            {
+              "valid": true,
+              "movement_quantity": 0.39404986045808155,
+              "speed": 0.47173819102918046,
+              "motion_range": 0.4063529163558881,
+              "proximity": 1
+            }
+          ]
+        },
+        {
+          "people": [
+            {
+              "valid": true,
+              "movement_quantity": 0.5706860209646093,
+              "speed": 0.6162834700143676,
+              "motion_range": 0.9864693128520565,
+              "proximity": 1
+            },
+            {
+              "valid": true,
+              "movement_quantity": 0.39404986045808155,
+              "speed": 0.47173819102918046,
+              "motion_range": 0.4063529163558881,
+              "proximity": 1
+            },
+            {
+              "valid": true,
+              "movement_quantity": 0.39404986045808155,
+              "speed": 0.47173819102918046,
+              "motion_range": 0.4063529163558881,
+              "proximity": 1
+            }
+          ]
+        },
+        {
+          "people": [
+            {
+              "valid": true,
+              "movement_quantity": 0.5135396329623366,
+              "speed": 0.5305047554815295,
+              "motion_range": 0.8947704904099987,
+              "proximity": 1
+            },
+            {
+              "valid": true,
+              "movement_quantity": 0.39404986045808155,
+              "speed": 0.47173819102918046,
+              "motion_range": 0.4063529163558881,
+              "proximity": 1
+            },
+            {
+              "valid": true,
+              "movement_quantity": 0.39404986045808155,
+              "speed": 0.47173819102918046,
+              "motion_range": 0.4063529163558881,
+              "proximity": 1
+            }
+          ]
+        }
+      ]
+    },
+    "detection": [
+      {
+        "people": [
+          {
+            "valid": true,
+            "movement_quantity": 0.4310733122323709,
+            "speed": 0.4898413877151004,
+            "motion_range": 0.0399424276782553,
+            "proximity": 1
+          },
+          {
+            "valid": true,
+            "movement_quantity": 0.39404986045808155,
+            "speed": 0.47173819102918046,
+            "motion_range": 0.4063529163558881,
+            "proximity": 1
+          },
+          {
+            "valid": true,
+            "movement_quantity": 0.39404986045808155,
+            "speed": 0.47173819102918046,
+            "motion_range": 0.4063529163558881,
+            "proximity": 1
+          }
+        ],
+        "emotions": {
+          "Happy": -1,
+          "Angry": -1,
+          "Relax": -1,
+          "Sad": -1
+        }
+      },
+      {
+        "people": [
+          {
+            "valid": true,
+            "movement_quantity": 0.39404986045808155,
+            "speed": 0.47173819102918046,
+            "motion_range": 0.4063529163558881,
+            "proximity": 1
+          },
+          {
+            "valid": true,
+            "movement_quantity": 0.39404986045808155,
+            "speed": 0.47173819102918046,
+            "motion_range": 0.4063529163558881,
+            "proximity": 1
+          }
+        ],
+        "emotions": {
+          "Happy": -1,
+          "Angry": -1,
+          "Relax": -1,
+          "Sad": -1
+        }
+      },
+      {
+        "people": [
+          {
+            "valid": true,
+            "movement_quantity": 0.4526674811597352,
+            "speed": 0.5223772534903921,
+            "motion_range": 0.24419697866133683,
+            "proximity": 1
+          },
+          {
+            "valid": true,
+            "movement_quantity": 0.39404986045808155,
+            "speed": 0.47173819102918046,
+            "motion_range": 0.4063529163558881,
+            "proximity": 1
+          },
+          {
+            "valid": true,
+            "movement_quantity": 0.39404986045808155,
+            "speed": 0.47173819102918046,
+            "motion_range": 0.4063529163558881,
+            "proximity": 1
+          }
+        ],
+        "emotions": {
+          "Happy": -1,
+          "Angry": -1,
+          "Relax": -1,
+          "Sad": -1
+        }
+      },
+      {
+        "people": [
+          {
+            "valid": true,
+            "movement_quantity": 0.4526674811597352,
+            "speed": 0.5223772534903921,
+            "motion_range": 0.24419697866133683,
+            "proximity": 1
+          },
+          {
+            "valid": true,
+            "movement_quantity": 0.39404986045808155,
+            "speed": 0.47173819102918046,
+            "motion_range": 0.4063529163558881,
+            "proximity": 1
+          },
+          {
+            "valid": true,
+            "movement_quantity": 0.39404986045808155,
+            "speed": 0.47173819102918046,
+            "motion_range": 0.4063529163558881,
+            "proximity": 1
+          }
+        ],
+        "emotions": {
+          "Happy": -1,
+          "Angry": -1,
+          "Relax": -1,
+          "Sad": -1
+        }
+      },
+      {
+        "people": [
+          {
+            "valid": true,
+            "movement_quantity": 0.4526674811597352,
+            "speed": 0.5223772534903921,
+            "motion_range": 0.24419697866133683,
+            "proximity": 1
+          },
+          {
+            "valid": true,
+            "movement_quantity": 0.39404986045808155,
+            "speed": 0.47173819102918046,
+            "motion_range": 0.4063529163558881,
+            "proximity": 1
+          },
+          {
+            "valid": true,
+            "movement_quantity": 0.39404986045808155,
+            "speed": 0.47173819102918046,
+            "motion_range": 0.4063529163558881,
+            "proximity": 1
+          }
+        ],
+        "emotions": {
+          "Happy": 1,
+          "Angry": 0,
+          "Relax": 0,
+          "Sad": 0
+        }
+      },
+      {
+        "people": [
+          {
+            "valid": true,
+            "movement_quantity": 0.4526674811597352,
+            "speed": 0.5223772534903921,
+            "motion_range": 0.24419697866133683,
+            "proximity": 1
+          },
+          {
+            "valid": true,
+            "movement_quantity": 0.39404986045808155,
+            "speed": 0.47173819102918046,
+            "motion_range": 0.4063529163558881,
+            "proximity": 1
+          },
+          {
+            "valid": true,
+            "movement_quantity": 0.39404986045808155,
+            "speed": 0.47173819102918046,
+            "motion_range": 0.4063529163558881,
+            "proximity": 1
+          }
+        ],
+        "emotions": {
+          "Happy": 1,
+          "Angry": 0,
+          "Relax": 0,
+          "Sad": 0
+        }
+      },
+      {
+        "people": [
+          {
+            "valid": true,
+            "movement_quantity": 0.4526674811597352,
+            "speed": 0.5223772534903921,
+            "motion_range": 0.24419697866133683,
+            "proximity": 1
+          },
+          {
+            "valid": true,
+            "movement_quantity": 0.39404986045808155,
+            "speed": 0.47173819102918046,
+            "motion_range": 0.4063529163558881,
+            "proximity": 1
+          },
+          {
+            "valid": true,
+            "movement_quantity": 0.39404986045808155,
+            "speed": 0.47173819102918046,
+            "motion_range": 0.4063529163558881,
+            "proximity": 1
+          }
+        ],
+        "emotions": {
+          "Happy": 0.8326174387429349,
+          "Angry": 0.15484954585226937,
+          "Relax": 1,
+          "Sad": 0.854319757556192
+        }
+      },
+      {
+        "people": [
+          {
+            "valid": true,
+            "movement_quantity": 0.45725101369376564,
+            "speed": 0.5777285234963347,
+            "motion_range": 0.2479483776889918,
+            "proximity": 1
+          },
+          {
+            "valid": true,
+            "movement_quantity": 0.39404986045808155,
+            "speed": 0.47173819102918046,
+            "motion_range": 0.4063529163558881,
+            "proximity": 1
+          },
+          {
+            "valid": true,
+            "movement_quantity": 0.39404986045808155,
+            "speed": 0.47173819102918046,
+            "motion_range": 0.4063529163558881,
+            "proximity": 1
+          }
+        ],
+        "emotions": {
+          "Happy": 0.820950129103553,
+          "Angry": 0.16695781505183604,
+          "Relax": 1,
+          "Sad": 0.8819849881055617
+        }
+      },
+      {
+        "people": [
+          {
+            "valid": true,
+            "movement_quantity": 0.7366864607334037,
+            "speed": 0.7896190327050073,
+            "motion_range": 0.3769357748412747,
+            "proximity": 1
+          },
+          {
+            "valid": true,
+            "movement_quantity": 0.39404986045808155,
+            "speed": 0.47173819102918046,
+            "motion_range": 0.4063529163558881,
+            "proximity": 1
+          },
+          {
+            "valid": true,
+            "movement_quantity": 0.39404986045808155,
+            "speed": 0.47173819102918046,
+            "motion_range": 0.4063529163558881,
+            "proximity": 1
+          }
+        ],
+        "emotions": {
+          "Happy": 0.10965161412089464,
+          "Angry": 0.9051394667662175,
+          "Relax": 0,
+          "Sad": 0
+        }
+      },
+      {
+        "people": [
+          {
+            "valid": true,
+            "movement_quantity": 0.6397500637984291,
+            "speed": 0.7973148926623147,
+            "motion_range": 0.13947657608198066,
+            "proximity": 1
+          },
+          {
+            "valid": true,
+            "movement_quantity": 0.39404986045808155,
+            "speed": 0.47173819102918046,
+            "motion_range": 0.4063529163558881,
+            "proximity": 1
+          },
+          {
+            "valid": true,
+            "movement_quantity": 0.39404986045808155,
+            "speed": 0.47173819102918046,
+            "motion_range": 0.4063529163558881,
+            "proximity": 1
+          }
+        ],
+        "emotions": {
+          "Happy": 0.35640168079313134,
+          "Angry": 0.6490636168381656,
+          "Relax": 0,
+          "Sad": 0.5192261632475834
+        }
+      },
+      {
+        "people": [
+          {
+            "valid": true,
+            "movement_quantity": 0.863348963311787,
+            "speed": 0.8967116303624543,
+            "motion_range": 0.9353833687320755,
+            "proximity": 1
+          },
+          {
+            "valid": true,
+            "movement_quantity": 0.39404986045808155,
+            "speed": 0.47173819102918046,
+            "motion_range": 0.4063529163558881,
+            "proximity": 1
+          },
+          {
+            "valid": true,
+            "movement_quantity": 0.39404986045808155,
+            "speed": 0.47173819102918046,
+            "motion_range": 0.4063529163558881,
+            "proximity": 1
+          }
+        ],
+        "emotions": {
+          "Happy": 0,
+          "Angry": 1,
+          "Relax": 0,
+          "Sad": 0
+        }
+      },
+      {
+        "people": [
+          {
+            "valid": true,
+            "movement_quantity": 0.42801534012487913,
+            "speed": 0.45714768542233686,
+            "motion_range": 0.8464394941170339,
+            "proximity": 1
+          },
+          {
+            "valid": true,
+            "movement_quantity": 0.39404986045808155,
+            "speed": 0.47173819102918046,
+            "motion_range": 0.4063529163558881,
+            "proximity": 1
+          },
+          {
+            "valid": true,
+            "movement_quantity": 0.39404986045808155,
+            "speed": 0.47173819102918046,
+            "motion_range": 0.4063529163558881,
+            "proximity": 1
+          }
+        ],
+        "emotions": {
+          "Happy": 0.8953690742101018,
+          "Angry": 0.08972624678554583,
+          "Relax": 1,
+          "Sad": 0.7055246611537324
+        }
+      },
+      {
+        "people": [
+          {
+            "valid": true,
+            "movement_quantity": 0.47222627611079965,
+            "speed": 0.4966712673988794,
+            "motion_range": 1,
+            "proximity": 1
+          },
+          {
+            "valid": true,
+            "movement_quantity": 0.39404986045808155,
+            "speed": 0.47173819102918046,
+            "motion_range": 0.4063529163558881,
+            "proximity": 1
+          },
+          {
+            "valid": true,
+            "movement_quantity": 0.39404986045808155,
+            "speed": 0.47173819102918046,
+            "motion_range": 0.4063529163558881,
+            "proximity": 1
+          }
+        ],
+        "emotions": {
+          "Happy": 0.7828308352503257,
+          "Angry": 0.2065178066812959,
+          "Relax": 1,
+          "Sad": 0.9723724969164252
+        }
+      },
+      {
+        "people": [
+          {
+            "valid": true,
+            "movement_quantity": 0.39557807210714385,
+            "speed": 0.41376165302373474,
+            "motion_range": 0.5968832826052705,
+            "proximity": 1
+          },
+          {
+            "valid": true,
+            "movement_quantity": 0.39404986045808155,
+            "speed": 0.47173819102918046,
+            "motion_range": 0.4063529163558881,
+            "proximity": 1
+          },
+          {
+            "valid": true,
+            "movement_quantity": 0.39404986045808155,
+            "speed": 0.47173819102918046,
+            "motion_range": 0.4063529163558881,
+            "proximity": 1
+          }
+        ],
+        "emotions": {
+          "Happy": 0.9779376273966871,
+          "Angry": 0.004037060477563379,
+          "Relax": 0.6481572916080391,
+          "Sad": 0.5097401889284978
+        }
+      }
+    ],
+    "object_generator": [
+      "1536716117162210270113237713327615153061660714276153671611716221027011323771332761515306166071427615"
+    ]
+  }
