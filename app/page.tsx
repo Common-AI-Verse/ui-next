@@ -7,27 +7,23 @@ import UnityLoader from '../components/UnityLoader';
 import { useQRCode } from 'next-qrcode'
 import { createClient } from '@supabase/supabase-js'
 
-import EmotionsData from '../types/EmotionsData';
-import HumanData from '../types/HumanData';
-
-interface NewRecordType {
-    actual_state: string;  // Adjust the type if actual_state is not a string
-    // ... other properties
-  }
-
-
+import EmotionsData from '@/types/EmotionsData';
+import HumanData from '@/types/HumanData';
+import NewRecordType from '@/types/NewRecordType';
 
 const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+                            )
 
 const Home : React.FC = () => {
-
-
 
     const [interactionsRecorded, setinteractionsRecorded] = useState<number>(0);
 
     const [roomOcupied, setroomOcupied] = useState<boolean>(false);
+
+    const [timeRemaining, setTimeRemaining] = useState(5 * 60);
+    const [timerActive, setTimerActive] = useState(true);
 
     const [emotionsData, setemotionsData] = useState<EmotionsData>({
         "happiness": 1.4,
@@ -65,10 +61,16 @@ const Home : React.FC = () => {
 
     const [lang, setLang] = useState<string>("es");
 
+    //const [createdDate, setcreatedDate] = useState<time>
+
     const { SVG } = useQRCode();
 
     const emotionsParam:string = encodeURIComponent(JSON.stringify(emotionsData));
     const humanParam:string = encodeURIComponent(JSON.stringify(humanData));
+
+
+    const [timeString, setTimeString] = useState<string>('');
+    const [dateString, setDateString] = useState<string>('');
 
     useEffect(() => {
 
@@ -98,47 +100,269 @@ const Home : React.FC = () => {
       }, []);  
 
 
+    useEffect(() => {
+      const intervalId = setInterval(() => {
+          if (timerActive) {
+              setTimeRemaining(prevTime => {
+                  if (prevTime > 0) {
+                      return prevTime - 1;
+                  } else {
+                      clearInterval(intervalId);
+                      return 0;
+                  }
+              });
+          }
+      }, 1000);  // Update every second
+  
+      return () => clearInterval(intervalId);  // Clear interval on unmount
+  }, [timerActive]);
 
 
-useEffect(() => {
+  useEffect(() => {
 
-    
-    const changes = supabase
-    .channel('table-db-changes')
-    .on(
-      'postgres_changes',
-      {
-        event: '*',
-        schema: 'public',
-        table: 'room_state_dev',
-      },
-      (payload) => {
+    const handlePostgresChanges = (payload:any) => {
+
         const { new: newRecord } = payload;
 
         console.log('New Record:', newRecord);
 
-        const { actual_state } = newRecord as NewRecordType; 
-        
-        if(actual_state === "InitialState"){
+        const { actual_state, number_interactions } = newRecord;
 
-            setroomOcupied(true);
-            
-        } else if(actual_state === "FinalState"){
-
-            window.location.reload()
-        } else {
-
-            setroomOcupied(false);
+        if (number_interactions !== interactionsRecorded) {
+            setinteractionsRecorded(number_interactions);
         }
 
-      } 
-    )
-    .subscribe()
+        if (actual_state === "InitialState") {
+          setroomOcupied(true);
+          setTimerActive(true);  // Start the timer when the state is 'InitialState'
+      } else if (actual_state === "WaitingPeople") {
+          setTimerActive(false);  // Stop the timer and reset to 5 minutes when the state is 'WaitingPeople'
+          setTimeRemaining(5 * 60);
+      } else if (actual_state === "FinalState") {
+          window.location.reload();
+      }
+    };
 
-}, []);
+    const changes = supabase
+        .channel('table-db-changes')
+        .on(
+            'postgres_changes',
+            {
+                event: '*',
+                schema: 'public',
+                table: 'room_state_dev',
+            },
+            handlePostgresChanges
+        )
+        .subscribe();
+
+    return () => {
+
+        //supabase.removeSubscription(changes);  // Unsubscribe on unmount
+
+    };
+}, []); 
+
+
+  
+  useEffect(() => {
+      const fetchRoomState = async () => {
+          const { data, error } = await supabase
+              .from('room_state_dev')
+              .select('actual_state')
+              .single();
+  
+          if (error) {
+              throw new Error(error.message);
+          }
+  
+          if (data) {
+
+              const isInitialState = data.actual_state === 'InitialState';
+              const isWaitingPeople = data.actual_state === 'WaitingPeople';
+              const isFinalState = data.actual_state === 'FinalState';
+
+              setroomOcupied(isInitialState);
+  
+              // Reset timer and stop countdown if necessary
+              if (isFinalState || isWaitingPeople) {
+
+                  setTimerActive(false);
+
+              }
+          }
+      };
+  
+      const intervalId = setInterval(fetchRoomState, 5000);  // Check every 5 seconds
+  
+      return () => clearInterval(intervalId);  // Clear interval on unmount
+  }, []);
+
     
-    //console.log("Url: ", url);
+    useEffect(() => {
+    // Define an async function
+    const fetchInteractions = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('room_state_dev')
+          .select('number_interactions')
+          .single();
 
+        if (error) {
+          throw new Error(error.message);
+        }
+
+        if (data) {
+          setinteractionsRecorded(data.number_interactions);
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    // Call the async function
+    fetchInteractions();
+
+    }, []); 
+
+    useEffect(() => {
+        const fetchRoomState = async () => {
+          try {
+            const { data, error } = await supabase
+              .from('room_state_dev')
+              .select('actual_state')
+              .single(); 
+    
+            if (error) {
+              throw new Error(error.message);
+            }
+    
+            if (data) {
+              
+              const isInitialState = data.actual_state === 'InitialState';
+              const isWaitingPeople = data.actual_state === 'WaitingPeople';
+              const isFinalState = data.actual_state === 'FinalState';
+
+              // Check if the actual_state value is "InitialState" and update roomOccupied accordingly
+              setroomOcupied(isInitialState);
+
+              if (isFinalState || isWaitingPeople) {
+
+                setTimerActive(false);
+
+            }
+            
+            }
+          } catch (error) {
+            console.error('Error fetching data:', error);
+          }
+        };
+    
+        // Call the async function
+        fetchRoomState();
+      }, []);
+      
+
+      useEffect(() => {
+        const fetchData = async () => {
+          try {
+            const { data, error } = await supabase
+              .from('last_session_dev')
+              .select('created_at')
+              .single();  // Assuming you want to fetch a single row
+    
+            if (error) {
+                console.log("Error in Supabase", error)
+              throw error;
+            }
+    
+            if (data) {
+
+              const supabaseDate: string = data.created_at;
+
+              // Create a new Date object from the Supabase date
+              const date = new Date(supabaseDate);
+          
+              // Format the time string
+              const hours = String(date.getHours()).padStart(2, '0');
+              const minutes = String(date.getMinutes()).padStart(2, '0');
+              const seconds = String(date.getSeconds()).padStart(2, '0');
+              const formattedTime = `${hours}:${minutes}:${seconds}`;
+          
+              // Format the date string
+              const day = String(date.getDate()).padStart(2, '0');
+              const month = String(date.getMonth() + 1).padStart(2, '0');  // Months are 0-based in JavaScript
+              const year = date.getFullYear();
+              const formattedDate = `${day}/${month}/${year}`;
+          
+              // Update state with the formatted strings
+              setTimeString(formattedTime);
+              setDateString(formattedDate);
+              //console.log("created at in data", createdDate)
+            }
+          } catch (error:any) {
+            console.error(error.message);
+          }
+        };
+    
+        fetchData();
+        
+
+      }, []);
+
+
+      useEffect(() => {
+
+        async function fetchData() {
+            const { data, error } = await supabase
+                .from('last_session_dev')
+                .select('metadata')
+                .single();
+    
+            if (error) {
+                console.error('Error fetching data: ', error.message);
+                return;
+            }
+    
+            if (data && data.metadata) { 
+    
+                console.log("Data", data.metadata);
+    
+                setemotionsData({
+                    happiness: data.metadata.emotions.Happy,
+                    anger: data.metadata.emotions.Angry,
+                    sadness: data.metadata.emotions.Sad,
+                    relaxation: data.metadata.emotions.Relax,
+                });
+    
+                // Transforming the 'people' array to match the structure of HumanData
+
+                const transformedHumanData = data.metadata.people.map((person: any) => ({
+                    movementQuantity: person.movement_quantity,
+                    speed: person.speed,
+                    motionRange: person.motion_range,
+                    proximity: person.proximity,
+                }));
+    
+                sethumanData(transformedHumanData);
+    
+                setobjectGenerator(data.metadata.object_generator);
+            }
+        }
+    
+        fetchData();
+
+    }, []);
+
+
+        
+
+      if(timeString && dateString){
+
+        console.log("time string", timeString, "date string", dateString)
+      }
+
+      
 
     return (
     <div className="h-screen w-full p-4">
@@ -163,7 +387,7 @@ useEffect(() => {
                             <div className="w-full text-right pt-8">
                                 <p className="font-light text-lg">Number of interactions: { interactionsRecorded }</p>
                             </div>
-                            <div className="text-xl uppercase mt-auto mb-3 text-graphics-green"><p className="">ROOM status: { `${ roomOcupied ? "OCCUPIED" : "FREE" }` }</p></div>
+                            <div className={`text-xl uppercase mt-auto mb-3 ${roomOcupied ? "text-graphics-red" : "text-graphics-green"}`}><p className="">ROOM status: { `${ roomOcupied ? "OCCUPIED" : "FREE" }` }</p></div>
                         </div>
 
                         {/* Second text block */}
@@ -171,9 +395,9 @@ useEffect(() => {
 
                         <div className="flex flex-col w-full pt-6 border-white border-b-[3px] pb-11">
 
-                        <p className="font-plex font-regular text-2xl">Experience duration: 5 min</p>
+                        <p className="font-plex font-regular text-2xl">Experience duration: {timerActive ? `${Math.floor(timeRemaining / 60)}:${timeRemaining % 60}` : '5'} min</p>
 
-                        <h1 className="text-5xl uppercase text-accents-green font-bold pt-5 pb-8">STATE: { roomOcupied ? "COLLECTING DATA" : "WAITING FOR HUMANS"}</h1>
+                        <h1 className={`text-5xl uppercase ${roomOcupied ? "text-accents-red" : "text-graphics-green"} font-bold pt-5 pb-8`}>STATE: { roomOcupied ? "ON WORKING" : "WAITING FOR HUMANS"}</h1>
 
 
                         { lang === "es" && (       
@@ -232,7 +456,7 @@ useEffect(() => {
                         <p className="font-plex font-semibold text-2xl uppercase">INSTRUCCIONS</p>
                         <ul className="flex flex-col  gap-11 text-2xl font-extralight pt-10">
                             <li>
-                                <p className="">Participa amb almenys un acompanyant</p>
+                                <p className="">Participa amb com a mínim un acompanyant</p>
                             </li>
                             <li>
                                 <p className="">Entreu a la càpsula interactiva</p>
@@ -286,8 +510,8 @@ useEffect(() => {
                                     <p className="w-full font-bold text-5xl pt-3 text-center">LAST SESSION DATA</p>
                                     </div>
                                     <div className="flex flex-col w-2/12 my-auto text-xl font-semibold pl-4">
-                                        <p>13:22:34</p>
-                                        <p>18/10/2023</p>
+                                        <p>{timeString}</p>
+                                        <p>{dateString}</p>
 
                                     </div>
                                 

@@ -5,12 +5,12 @@ import { useEffect } from 'react';
 const UnityLoader: React.FC = () => {
   useEffect(() => {
     const buildUrl = "/Build";
-    const loaderUrl = buildUrl + "/Build.loader.js";
+    const loaderUrl = buildUrl + "/BuildFinalLink.loader.js";
 
     const config = {
-      dataUrl: buildUrl + "/Build.data",
-      frameworkUrl: buildUrl + "/Build.framework.js",
-      codeUrl: buildUrl + "/Build.wasm",
+      dataUrl: buildUrl + "/BuildFinalLink.data",
+      frameworkUrl: buildUrl + "/BuildFinalLink.framework.js",
+      codeUrl: buildUrl + "/BuildFinalLink.wasm",
       streamingAssetsUrl: "StreamingAssets",
       companyName: "DefaultCompany",
       productName: "CCCBProject",
