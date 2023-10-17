@@ -18,6 +18,7 @@ function handleError(error: any): RESPONSE_APIREST {
 }
 
 function processReceivedJson(receivedJson: any): any {
+  
   // Initialize sums and counters for averaging
   let sumMovementQuantity = [0, 0, 0];
   let sumSpeed = [0, 0, 0];
