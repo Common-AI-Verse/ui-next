@@ -11,82 +11,68 @@ import EmotionsData from '@/types/EmotionsData';
 import HumanData from '@/types/HumanData';
 import NewRecordType from '@/types/NewRecordType';
 
+
 const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-                            )
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+                          )
+
+interface FormData {
+    nombre: string;
+    email: string;
+
+}
+
 
 const MobileView : React.FC = () => {
 
-    const [interactionsRecorded, setinteractionsRecorded] = useState<number>(0);
-
-    const [roomOcupied, setroomOcupied] = useState<boolean>(false);
-
-    const [timeRemaining, setTimeRemaining] = useState(5 * 60);
-    const [timerActive, setTimerActive] = useState(true);
-
     const [emotionsData, setemotionsData] = useState<EmotionsData>({
-        "happiness": 1.4,
-        "anger": 6.8,
-        "sadness": 4.3,
-        "relaxation": 2.8
+        "happiness": 0.0,
+        "anger": 0.0,
+        "sadness": 0.0,
+        "relaxation": 0.0
         });
 
 
     const [humanData, sethumanData] = useState<HumanData[]>([
         {
-            "movementQuantity": 2.3,
-            "speed": 4.1,
-            "motionRange": 2.2,
-            "proximity": 5.9
+            "movementQuantity": 0.0,
+            "speed": 0.0,
+            "motionRange": 0.0,
+            "proximity": 0.0
         },
         {
-            "movementQuantity": 8.1,
-            "speed": 2.3,
-            "motionRange": 7.8,
-            "proximity": 6.3
+            "movementQuantity": 0.0,
+            "speed": 0.0,
+            "motionRange": 0.0,
+            "proximity": 0.0
         },
         {
-            "movementQuantity": 5.3,
-            "speed": 8.4,
-            "motionRange": 5.7,
-            "proximity": 9.1
+            "movementQuantity": 0.0,
+            "speed": 0.0,
+            "motionRange": 0.0,
+            "proximity": 0.0
         }        
      ]
     );
 
-    const [objectGenerator, setobjectGenerator] = useState<string>("1536716117162210270113237713327615153061660714276153671611716221027011323771332761515306166071427615");
+    const [formData, setFormData] = useState<FormData>({
+      nombre: "",
+      email: "",
+    });
 
-    const [qrUrl, setqrUrl] = useState<string>("");
+    const [objectGenerator, setobjectGenerator] = useState<string>("0");
 
     const [lang, setLang] = useState<string>("es");
 
-    //const [createdDate, setcreatedDate] = useState<time>
-
     const { SVG } = useQRCode();
-
-    const emotionsParam:string = encodeURIComponent(JSON.stringify(emotionsData));
-    const humanParam:string = encodeURIComponent(JSON.stringify(humanData));
-
 
     const [timeString, setTimeString] = useState<string>('');
     const [dateString, setDateString] = useState<string>('');
 
-    useEffect(() => {
-
-        const newUrl:string = `${window.location.pathname}?emotionsData=${emotionsParam}&humanData=${humanParam}&objGen=${objectGenerator}`;
-
-        setqrUrl(`https://ui-api-next.vercel.app/mobileview?emotionsData=${emotionsParam}&humanData=${humanParam}&objGen=${objectGenerator}`)
-
-        window.history.replaceState({}, '', newUrl);
-
-        console.log("Url: ", newUrl);
-
-        console.log("Mobile Url: ", qrUrl);
-
-    }, [emotionsParam, humanParam, objectGenerator, qrUrl]);
-
-    
+    const [submissionStatusEs, setSubmissionStatusEs] = useState<string | null>(null);
+    const [submissionStatusENG, setSubmissionStatusENG] = useState<string | null>(null);
+    const [submissionStatusCat, setSubmissionStatusCat] = useState<string | null>(null);
 
     useEffect(() => {
         const languages = ['es', 'en', 'cat'];  // array of languages
@@ -101,289 +87,112 @@ const MobileView : React.FC = () => {
       }, []);  
 
 
-    useEffect(() => {
-      const intervalId = setInterval(() => {
-          if (timerActive) {
-              setTimeRemaining(prevTime => {
-                  if (prevTime > 0) {
-                      return prevTime - 1;
-                  } else {
-                      clearInterval(intervalId);
-                      return 0;
-                  }
-              });
-          }
-      }, 1000);  // Update every second
-  
-      return () => clearInterval(intervalId);  // Clear interval on unmount
-  }, [timerActive]);
-
-
-  useEffect(() => {
-
-    const handlePostgresChanges = (payload:any) => {
-
-        const { new: newRecord } = payload;
-
-        console.log('New Record:', newRecord);
-
-        const { actual_state, number_interactions } = newRecord;
-
-        if (number_interactions !== interactionsRecorded) {
-            setinteractionsRecorded(number_interactions);
-        }
-
-        if (actual_state === "InitialState") {
-          setroomOcupied(true);
-          setTimerActive(true);  // Start the timer when the state is 'InitialState'
-      } else if (actual_state === "WaitingPeople") {
-          setTimerActive(false);  // Stop the timer and reset to 5 minutes when the state is 'WaitingPeople'
-          setTimeRemaining(5 * 60);
-      } else if (actual_state === "FinalState") {
-          window.location.reload();
-      }
-    };
-
-    const changes = supabase
-        .channel('table-db-changes')
-        .on(
-            'postgres_changes',
-            {
-                event: '*',
-                schema: 'public',
-                table: 'room_state_dev',
-            },
-            handlePostgresChanges
-        )
-        .subscribe();
-
-    return () => {
-
-        //supabase.removeSubscription(changes);  // Unsubscribe on unmount
-
-    };
-}, []); 
-
-
-  
-  useEffect(() => {
-      const fetchRoomState = async () => {
-          const { data, error } = await supabase
-              .from('room_state_dev')
-              .select('actual_state')
-              .single();
-  
-          if (error) {
-              throw new Error(error.message);
-          }
-  
-          if (data) {
-
-              const isInitialState = data.actual_state === 'InitialState';
-              const isWaitingPeople = data.actual_state === 'WaitingPeople';
-              const isFinalState = data.actual_state === 'FinalState';
-
-              setroomOcupied(isInitialState);
-  
-              // Reset timer and stop countdown if necessary
-              if (isFinalState || isWaitingPeople) {
-
-                  setTimerActive(false);
-
-              }
-          }
-      };
-  
-      const intervalId = setInterval(fetchRoomState, 5000);  // Check every 5 seconds
-  
-      return () => clearInterval(intervalId);  // Clear interval on unmount
-  }, []);
-
-    
-    useEffect(() => {
-    // Define an async function
-    const fetchInteractions = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('room_state_dev')
-          .select('number_interactions')
-          .single();
-
-        if (error) {
-          throw new Error(error.message);
-        }
-
-        if (data) {
-          setinteractionsRecorded(data.number_interactions);
-        }
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-
-    // Call the async function
-    fetchInteractions();
-
-    }, []); 
-
-    useEffect(() => {
-        const fetchRoomState = async () => {
-          try {
-            const { data, error } = await supabase
-              .from('room_state_dev')
-              .select('actual_state')
-              .single(); 
-    
-            if (error) {
-              throw new Error(error.message);
-            }
-    
-            if (data) {
-              
-              const isInitialState = data.actual_state === 'InitialState';
-              const isWaitingPeople = data.actual_state === 'WaitingPeople';
-              const isFinalState = data.actual_state === 'FinalState';
-
-              // Check if the actual_state value is "InitialState" and update roomOccupied accordingly
-              setroomOcupied(isInitialState);
-
-              if (isFinalState || isWaitingPeople) {
-
-                setTimerActive(false);
-
-            }
-            
-            }
-          } catch (error) {
-            console.error('Error fetching data:', error);
-          }
-        };
-    
-        // Call the async function
-        fetchRoomState();
-      }, []);
-      
-
       useEffect(() => {
-        const fetchData = async () => {
-          try {
-            const { data, error } = await supabase
-              .from('last_session_dev')
-              .select('created_at')
-              .single();  // Assuming you want to fetch a single row
+        function fetchDataFromURL() {
+            const params = new URLSearchParams(window.location.search);
+
+            console.log("Params", params)
     
-            if (error) {
-                console.log("Error in Supabase", error)
-              throw error;
+            // Extract and parse the emotionsData parameter
+            const emotionsDataParam = params.get('emotionsData');
+
+            if (emotionsDataParam) {
+                const emotionsDataObj = JSON.parse(decodeURIComponent(emotionsDataParam));
+
+                console.log("Emotions Data Obj", emotionsDataObj)
+
+                setemotionsData(emotionsDataObj);
+                console.log("Emotions Data", emotionsData)
             }
     
-            if (data) {
-
-              const supabaseDate: string = data.created_at;
-
-              // Create a new Date object from the Supabase date
-              const date = new Date(supabaseDate);
-          
-              // Format the time string
-              const hours = String(date.getHours()).padStart(2, '0');
-              const minutes = String(date.getMinutes()).padStart(2, '0');
-              const seconds = String(date.getSeconds()).padStart(2, '0');
-              const formattedTime = `${hours}:${minutes}:${seconds}`;
-          
-              // Format the date string
-              const day = String(date.getDate()).padStart(2, '0');
-              const month = String(date.getMonth() + 1).padStart(2, '0');  // Months are 0-based in JavaScript
-              const year = date.getFullYear();
-              const formattedDate = `${day}/${month}/${year}`;
-          
-              // Update state with the formatted strings
-              setTimeString(formattedTime);
-              setDateString(formattedDate);
-              //console.log("created at in data", createdDate)
-            }
-          } catch (error:any) {
-            console.error(error.message);
-          }
-        };
-    
-        fetchData();
-        
-
-      }, []);
-
-
-      useEffect(() => {
-
-        async function fetchData() {
-            const { data, error } = await supabase
-                .from('last_session_dev')
-                .select('metadata')
-                .single();
-    
-            if (error) {
-                console.error('Error fetching data: ', error.message);
-                return;
+            // Extract and parse the humanData parameter
+            const humanDataParam = params.get('humanData');
+            if (humanDataParam) {
+                const humanDataObj = JSON.parse(decodeURIComponent(humanDataParam));
+                sethumanData(humanDataObj);
             }
     
-            if (data && data.metadata) { 
-    
-                console.log("Data", data.metadata);
-    
-                setemotionsData({
-                    happiness: data.metadata.emotions.Happy,
-                    anger: data.metadata.emotions.Angry,
-                    sadness: data.metadata.emotions.Sad,
-                    relaxation: data.metadata.emotions.Relax,
-                });
-    
-                // Transforming the 'people' array to match the structure of HumanData
+            // Extract and set the objectGenerator parameter
+            const objectGeneratorParam = params.get('objGen');
+            if (objectGeneratorParam) {
+                setobjectGenerator(objectGeneratorParam);
+            }
 
-                const transformedHumanData = data.metadata.people.map((person: any) => ({
-                    movementQuantity: person.movement_quantity,
-                    speed: person.speed,
-                    motionRange: person.motion_range,
-                    proximity: person.proximity,
-                }));
-    
-                sethumanData(transformedHumanData);
-    
-                setobjectGenerator(data.metadata.object_generator);
+            const timeStringParam = params.get('timeString');
+            const dateStringParam = params.get('dateString');
+            if (timeStringParam && dateStringParam) {
+                setTimeString(timeStringParam);
+                setDateString(dateStringParam);
             }
         }
     
-        fetchData();
-
+        fetchDataFromURL();
     }, []);
-
-
-        
-
-      if(timeString && dateString){
-
-        console.log("time string", timeString, "date string", dateString)
-      }
-
-      const [formData, setFormData] = useState({
-        nombre: '',
-        email: '',
-      });
+      
+    async function uploadData(data: any) {
+      const { error } = await supabase
+        .from('sessions_history')
+        .insert([data])
     
-      const handleChange = (e:any) => {
-        const { name, value } = e.target;
-        setFormData({
-          ...formData,
-          [name]: value,
-        });
-      };
+      if (error) {
+        console.error('Error uploading data:', error);
+        if (error.code === '23505') {
+          setSubmissionStatusEs('Usuario registrado, gracias por participar');
+          setSubmissionStatusENG('User already registered, thank you for participating');
+          setSubmissionStatusCat('Usuari registrat, gràcies per participar');
+
+        } else {
+          setSubmissionStatusEs('Ha ocurrido un error. Por favor intenta después.');
+          setSubmissionStatusENG('An error occurred. Please try again later.');
+          setSubmissionStatusCat("S'ha produït un error. Si us plau, torna-ho a intentar més tard.");
+        }
+      } else {
+        setSubmissionStatusENG('Thank you for submitting your information, you will soon receive an email with your session details.');
+        setSubmissionStatusEs('Gracias por enviar su información, pronto recibirá un correo electrónico con los detalles de su sesión.');
+        setSubmissionStatusCat('Gràcies per enviar la seva informació, aviat rebrà un correu electrònic amb els detalls de la seva sessió.');
+
+        console.log('Data uploaded successfully');
+      }
+    }
+    
+    
     
       const handleSubmit = (e:any) => {
         e.preventDefault();
         // Handle form submission here
         console.log('Form data submitted:', formData);
-      };
-    
 
-      
+        const dataToUpload = {
+          email: formData.email,
+          name: formData.nombre,
+          created_at:timeString + " , " + dateString,
+          params: "timeString="+timeString + "&dateString=" + dateString + "&emotionsData=" + JSON.stringify(emotionsData) + "&humanData=" + JSON.stringify(humanData) + "&objGen=" + objectGenerator,
+          metadata: {
+            formData,
+            emotionsData,
+            humanData,
+            objectGenerator,
+            timeString,
+            dateString
+          }
+        }
+
+        uploadData(dataToUpload)
+      };
+
+      function getPlaceholderName(lang:string) {
+        switch(lang) {
+          case 'es':
+            return 'Nombre';
+          case 'en':
+            return 'Name';
+          case 'cat':
+            return 'Nom';
+          default:
+            return 'Nombre';
+        }
+      }
+
 
     return (
     <div className="h-auto w-full p-2">
@@ -423,35 +232,7 @@ const MobileView : React.FC = () => {
                         <br />
                         Rellena a continuación tu dirección de correo electrónico y tu nombre para recibir los resultados directamente en tu buzón, descargar el modelo 3D colectivo e incluso acuñarlo como NFT.
                         </p>
-                            <form onSubmit={handleSubmit} className="pt-3">
-                            <div className="mb-4">
-                              <input
-                                type="text"
-                                name="nombre"
-                                id="nombre"
-                                placeholder='Nombre'
-                                value={formData.nombre}
-                                onChange={handleChange}
-                                className="shadow appearance-none border rounded-sm w-full py-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm pl-2"
-                              />
-                            </div>
-                            <div className="mb-4">
-                              <input
-                                type="email"
-                                name="email"
-                                id="email"
-                                placeholder='E-mail'
-                                value={formData.email}
-                                onChange={handleChange}
-                                className="shadow appearance-none border rounded-sm w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm pl-2"
-                              />
-                            </div>
-                            <div className="flex items-center justify-end pt-3">
-                              <button type="submit" className="bg-white text-gray-900 font-bold py-2 px-4 rounded-sm w-full mx-10">
-                                Enviar
-                              </button>
-                            </div>
-                          </form>
+
                         </div>
                         )
                         }
@@ -467,35 +248,6 @@ const MobileView : React.FC = () => {
                         <br />
                         Please fill bellow your e-mail address and name to receive your results directly in your mail box, to download the collective 3D model and even to mint it as a NFT.
                         </p>
-                            <form onSubmit={handleSubmit} className="pt-3">
-                            <div className="mb-4">
-                              <input
-                                type="text"
-                                name="nombre"
-                                id="nombre"
-                                placeholder='Name'
-                                value={formData.nombre}
-                                onChange={handleChange}
-                                className="shadow appearance-none border rounded-sm w-full py-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm pl-2"
-                              />
-                            </div>
-                            <div className="mb-4">
-                              <input
-                                type="email"
-                                name="email"
-                                id="email"
-                                placeholder='E-mail'
-                                value={formData.email}
-                                onChange={handleChange}
-                                className="shadow appearance-none border rounded-sm w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm pl-2"
-                              />
-                            </div>
-                            <div className="flex items-center justify-end pt-3">
-                              <button type="submit" className="bg-white text-gray-900 font-bold py-2 px-4 rounded-sm w-full mx-10">
-                                Send
-                              </button>
-                            </div>
-                          </form>
                         </div>
                         )
                         }
@@ -511,41 +263,56 @@ const MobileView : React.FC = () => {
                         <br />
                         Omple a continuació la teva adreça de correu electrònic i el teu nom per rebre els resultats directament a la teva bústia, descarregar el model 3D col·lectiu I fins I tot encunyar-lo com a NFT.
                         </p>
-                            <form onSubmit={handleSubmit} className="pt-3">
-                            <div className="mb-4">
-                              <input
-                                type="text"
-                                name="nombre"
-                                id="nombre"
-                                placeholder='Nom'
-                                value={formData.nombre}
-                                onChange={handleChange}
-                                className="shadow appearance-none border rounded-sm w-full py-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm pl-2"
-                              />
-                            </div>
-                            <div className="mb-4">
-                              <input
-                                type="email"
-                                name="email"
-                                id="email"
-                                placeholder='Email'
-                                value={formData.email}
-                                onChange={handleChange}
-                                className="shadow appearance-none border rounded-sm w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm pl-2"
-                              />
-                            </div>
-                            <div className="flex items-center justify-end pt-3">
-                              <button type="submit" className="bg-white text-gray-900 font-bold py-2 px-4 rounded-sm w-full mx-10">
-                                Enviar
-                              </button>
-                            </div>
-                          </form>
                         </div>
                         )
                         }
-                        
-                        </div>
 
+  <div>
+    {submissionStatusEs === null && submissionStatusENG === null && submissionStatusCat === null ? (
+      <form onSubmit={handleSubmit} className="pt-3">
+        <div className="mb-4">
+          <input
+            type="text"
+            name="nombre"
+            id="nombre"
+            placeholder={getPlaceholderName(lang)}
+            value={formData.nombre}
+            onChange={(e: any) => {
+              setFormData({ ...formData, nombre: e.target.value });
+            }}
+            className="shadow appearance-none border rounded-sm w-full py-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm pl-2"
+            required
+          />
+        </div>
+
+        <div className="mb-4">
+          <input
+            type="email"
+            name="email"
+            id="email"
+            placeholder='E-mail'
+            value={formData.email}
+            onChange={(e: any) => { setFormData({ ...formData, email: e.target.value }) }}
+            className="shadow appearance-none border rounded-sm w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm pl-2"
+            required
+          />
+        </div>
+
+        <div className="flex items-center justify-end pt-3">
+          <button type="submit" className="bg-white text-gray-900 font-bold py-2 px-4 rounded-sm w-full mx-10 hover:text-gray-200 hover:bg-gray-800">
+            { lang === "en" ? "Send" : "Enviar" }
+          </button>
+        </div>
+      </form>
+    ) : (
+      <div className="flex w-full text-center text-accents-green text-base uppercas pt-5">
+         { lang === "es" && ( submissionStatusEs )}
+         { lang === "en" && ( submissionStatusENG )}
+         { lang === "cat" && ( submissionStatusCat )}
+          </div>
+          )}
+          </div>
+      </div>
 
                         
                             <div className="flex flex-col w-full">
@@ -556,38 +323,38 @@ const MobileView : React.FC = () => {
                                 <div className="flex flex-row w-full h-auto pt-5">
 
                                                                   
-    <p className="flex flex-col w-full font-bold text-lg text-center justify-center items-center border-r-2 h-12 pr-4">SESSION DATA</p>
+                                <p className="flex flex-col w-full font-bold text-lg text-center justify-center items-center border-r-2 h-12 pr-4">SESSION DATA</p>
 
 
-<div className="flex flex-col text-base justify-center items-center w-full">
-    <p>{timeString}</p>
-    <p className="">{dateString}</p>
-</div>
+                                <div className="flex flex-col text-base justify-center items-center w-full">
+                                <p>{timeString}</p>
+                                <p className="">{dateString}</p>
+                                </div>
 
-</div>
+                                </div>
 
 
                                 {/* Unity background */}
-                                <div className="relative flex-grow flex w-full h-full ">
-     
-                                <div className="flex flex-col h-auto w-full absolute z-[-1] ">
- 
-                                <UnityLoader />
- 
-                                 <div id="unityPlayer" className="h-auto w-full text-black text-center text-3xl fade-out-edges">
-                                     <canvas id="unity-canvas" className="w-full h-full rounded"></canvas>
-                                 </div>
- 
-                                 </div>
-                                </div>
+{/*                                 <div className="flex-grow flex w-full h-full" style={{ zIndex: -1 }}>
+
+<div className="flex flex-col h-auto w-full">
+
+  <UnityLoader />
+
+    <div id="unityPlayer" className="h-auto w-full text-black text-center text-3xl fade-out-edges">
+        <canvas id="unity-canvas" className="w-full h-full rounded"></canvas>
+    </div>
+
+</div>
+</div> */}
  
 
 
-                                <div className="flex flex-col h-auto pt-28 w-full">
+                                <div className="flex flex-col h-auto w-full">
 
                                 {/* Emotions data display */}
 
-                                <ul className="flex flex-col w-full pt-12 gap-3 text-right h-auto pb-6">
+                                <ul className="flex flex-col w-full pt-6 gap-3 text-right h-auto pb-6">
 
                                     <li className="flex flex-row-reverse w-full">
                                         <IoTriangle className="text-xl"/>
@@ -749,8 +516,9 @@ const MobileView : React.FC = () => {
                 </div>
             </div>
         </div>
-
     </div>
+
+    
 
         )
 }

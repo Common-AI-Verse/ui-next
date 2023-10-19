@@ -10,6 +10,7 @@ import { createClient } from '@supabase/supabase-js'
 import EmotionsData from '@/types/EmotionsData';
 import HumanData from '@/types/HumanData';
 import NewRecordType from '@/types/NewRecordType';
+import { time } from 'console';
 
 const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -74,9 +75,9 @@ const Home : React.FC = () => {
 
     useEffect(() => {
 
-        const newUrl:string = `${window.location.pathname}?emotionsData=${emotionsParam}&humanData=${humanParam}&objGen=${objectGenerator}`;
+        const newUrl:string = `${window.location.pathname}?timeString=${timeString}&dateString=${dateString}&emotionsData=${emotionsParam}&humanData=${humanParam}&objGen=${objectGenerator}`;
 
-        setqrUrl(`https://ui-api-next.vercel.app/mobileview?emotionsData=${emotionsParam}&humanData=${humanParam}&objGen=${objectGenerator}`)
+        setqrUrl(`https://ui-api-next.vercel.app/mobileview?timeString=${timeString}&dateString=${dateString}&emotionsData=${emotionsParam}&humanData=${humanParam}&objGen=${objectGenerator}`)
 
         window.history.replaceState({}, '', newUrl);
 
@@ -84,7 +85,7 @@ const Home : React.FC = () => {
 
         console.log("Mobile Url: ", qrUrl);
 
-    }, [emotionsParam, humanParam, objectGenerator, qrUrl]);
+    }, [emotionsParam, humanParam, objectGenerator, qrUrl, timeString, dateString]);
 
       
     useEffect(() => {
@@ -548,28 +549,28 @@ const Home : React.FC = () => {
                                     <li>
                                     <p>
                                     Movement Quantity<br/>
-                                    { humanData[0].movementQuantity }                           
+                                    { Math.abs(humanData[0].movementQuantity) }                           
                                     </p>
                                     </li>
 
                                     <li>
                                     <p>
                                     Speed<br/>
-                                    { humanData[0].speed }                           
+                                    { Math.abs(humanData[0].speed) }                           
                                     </p>
                                     </li>
 
                                     <li>
                                     <p>
                                     Motion Range<br/>
-                                    { humanData[0].motionRange }                           
+                                    { Math.abs(humanData[0].motionRange) }                           
                                     </p>
                                     </li>
 
                                     <li>
                                     <p>
                                     Proximidad<br/>
-                                    { humanData[0].proximity }                           
+                                    { Math.abs(humanData[0].proximity) }                           
                                     </p>
                                     </li>
 
